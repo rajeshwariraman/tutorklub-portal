@@ -242,6 +242,23 @@ export default function App(){
     {/* ── DASHBOARD ── */}
     {tab==="dashboard"&&(
     <div style={{maxWidth:1160,margin:"0 auto",padding:"2rem 1.5rem"}}>
+      <div style={{textAlign:"center", marginBottom:"20px"}}>
+  <button
+    onClick={() => window.location.href = "https://calendly.com/tutorklub/free-assessment"}
+    style={{
+      background: "#0e8a7c",
+      color: "white",
+      padding: "12px 24px",
+      borderRadius: "30px",
+      border: "none",
+      fontWeight: "700",
+      fontSize: "14px",
+      cursor: "pointer"
+    }}
+  >
+    Book Free Demo
+  </button>
+</div>
 
       {!student&&(
       <div style={{background:C.white,borderRadius:18,padding:"2.5rem",maxWidth:460,margin:"0 auto",boxShadow:"0 4px 28px rgba(26,39,68,0.1)",textAlign:"center"}}>
