@@ -1,7 +1,5 @@
 // components/AI/AIWorkspace.jsx
 import { useState, useRef, useEffect } from "react";
-import { WORKSPACE_PROBLEMS } from "../../data/questionBank";
-import StepAnalysis from "./StepAnalysis";
 
 const C = {
   navy:"#1a2744", teal:"#0e8a7c", tealL:"#e6f5f3",
@@ -21,6 +19,17 @@ function Badge({label,type}){
   const b=type==="diff"?DB[label]:undefined;
   return <span style={{background:b,color:c,border:`1px solid ${c}33`,borderRadius:50,padding:"0.18rem 0.6rem",fontSize:"0.68rem",fontWeight:700,letterSpacing:"0.05em",display:"inline-block",whiteSpace:"nowrap"}}>{label}</span>;
 }
+
+const WORKSPACE_PROBLEMS=[
+  {id:"wp1",grade:3,subject:"Math",topic:"Fractions",title:"Adding Fractions",problem:"Calculate 1/2 + 1/4. Show every step of your working.",hint:"Start by thinking — can you add these directly, or do you need to change something first?",difficulty:"Intermediate"},
+  {id:"wp2",grade:3,subject:"Math",topic:"Multiplication",title:"24 x 5",problem:"Work out 24 x 5 step by step. Show how you break it down.",hint:"Try splitting 24 into 20 + 4 and multiply each part separately.",difficulty:"Intermediate"},
+  {id:"wp3",grade:4,subject:"Math",topic:"Division",title:"Long Division: 135 / 5",problem:"Calculate 135 divided by 5. Show each step of your working.",hint:"How many times does 5 go into 13? Write that down first.",difficulty:"Intermediate"},
+  {id:"wp4",grade:5,subject:"Math",topic:"Percentages",title:"Percentage Discount",problem:"A bag costs 800 rupees. There is a 25% discount. What is the final price? Show your steps.",hint:"Step 1: Find what 25% of 800 is. Step 2: Subtract from 800.",difficulty:"Intermediate"},
+  {id:"wp5",grade:2,subject:"Math",topic:"Addition with Carrying",title:"67 + 48",problem:"Add 67 + 48. Show each step including any carrying.",hint:"Start with the units column. What do 7 and 8 add up to?",difficulty:"Beginner"},
+  {id:"wp6",grade:5,subject:"Math",topic:"Algebra",title:"Solve the Equation",problem:"Solve: 3x + 4 = 19. Show every step of your working.",hint:"What do you need to do first to get 3x by itself?",difficulty:"Advanced"},
+  {id:"wp7",grade:3,subject:"Math",topic:"Area & Perimeter",title:"Rectangle Area vs Perimeter",problem:"A rectangle is 8 cm long and 5 cm wide. Find BOTH its area AND its perimeter. Show working for each.",hint:"Area and perimeter use different operations - one multiplies, one adds.",difficulty:"Intermediate"},
+  {id:"wp8",grade:4,subject:"Math",topic:"Division",title:"Word Problem Division",problem:"A teacher has 144 pencils to share equally among 12 students. How many does each student get? Show your working.",hint:"What operation do we use when sharing equally?",difficulty:"Beginner"},
+];
 
 async function analyzeStep(problem, allSteps, newStep){
   const prev=allSteps.map((s,i)=>`Step ${i+1}: "${s.text}" - ${s.isCorrect?"Correct":"Incorrect"}`).join("\n");
@@ -88,7 +97,7 @@ export default function AIWorkspace(){
     </div>
 
     <div style={{display:"grid",gridTemplateColumns:"320px 1fr",gap:"1.5rem",alignItems:"flex-start"}}>
-      {/* ── LEFT PANEL ── */}
+      {/* ── LEFT PANEL: Problem Selector ── */}
       <div>
         <div style={{background:C.white,borderRadius:14,padding:"1.2rem",boxShadow:"0 2px 14px rgba(26,39,68,0.08)",marginBottom:"1rem"}}>
           <div style={{fontSize:"0.67rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",color:C.soft,marginBottom:"0.75rem"}}>Choose a Problem</div>
@@ -110,7 +119,7 @@ export default function AIWorkspace(){
         </div>
       </div>
 
-      {/* ── RIGHT PANEL ── */}
+      {/* ── RIGHT PANEL: Workspace ── */}
       <div>
         {!activeProblemText&&(
         <div style={{background:C.white,borderRadius:14,padding:"3rem 2rem",textAlign:"center",boxShadow:"0 2px 14px rgba(26,39,68,0.08)"}}>
@@ -135,8 +144,40 @@ export default function AIWorkspace(){
           <div style={{background:C.white,borderRadius:14,padding:"1.25rem",marginBottom:"1rem",boxShadow:"0 2px 14px rgba(26,39,68,0.08)",maxHeight:440,overflowY:"auto"}}>
             <div style={{fontSize:"0.67rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",color:C.soft,marginBottom:"0.75rem"}}>Working — Step by Step Analysis</div>
             {steps.map((step,i)=>(
-              <StepAnalysis key={step.id} step={step} index={i}/>
-            ))}
+            <div key={step.id} style={{marginBottom:"1rem",borderRadius:12,overflow:"hidden",border:`2px solid ${step.isCorrect?"#dcfce7":"#fee2e2"}`}}>
+              <div style={{background:step.isCorrect?C.greenL:C.redL,padding:"0.6rem 1rem",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
+                  <span style={{width:22,height:22,borderRadius:"50%",background:step.isCorrect?C.green:C.red,color:C.white,fontSize:"0.7rem",fontWeight:700,display:"inline-flex",alignItems:"center",justifyContent:"center"}}>{i+1}</span>
+                  <span style={{fontSize:"0.78rem",fontWeight:700,color:step.isCorrect?C.green:C.red}}>{step.stepLabel||`Step ${i+1}`}</span>
+                </div>
+                <span style={{fontSize:"0.75rem",fontWeight:700,color:step.isCorrect?C.green:C.red}}>{step.isCorrect?"✓ Correct":"✗ Error in Thinking"}</span>
+              </div>
+              <div style={{padding:"0.85rem 1rem",background:C.white}}>
+                <div style={{fontFamily:"monospace",fontSize:"0.92rem",color:C.navy,fontWeight:600,marginBottom:"0.65rem",padding:"0.5rem 0.75rem",background:C.cream,borderRadius:6,lineHeight:1.5}}>{step.text}</div>
+                <div style={{display:"grid",gridTemplateColumns:step.isCorrect?"1fr 1fr":"1fr 1fr 1fr",gap:"0.5rem",marginBottom:"0.5rem"}}>
+                  <div style={{background:C.blueL,borderRadius:8,padding:"0.65rem"}}>
+                    <div style={{fontSize:"0.62rem",fontWeight:700,color:C.blue,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"0.25rem"}}>🤖 AI Analysis</div>
+                    <p style={{fontSize:"0.76rem",color:"#1e40af",lineHeight:1.6,margin:0}}>{step.analysis}</p>
+                  </div>
+                  {!step.isCorrect&&step.mistakeExplanation&&(
+                  <div style={{background:C.redL,borderRadius:8,padding:"0.65rem"}}>
+                    <div style={{fontSize:"0.62rem",fontWeight:700,color:C.red,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"0.25rem"}}>⚠️ Mistake in Thinking</div>
+                    <p style={{fontSize:"0.76rem",color:"#991b1b",lineHeight:1.6,margin:0}}>{step.mistakeExplanation}</p>
+                  </div>)}
+                  {!step.isCorrect&&step.correction&&(
+                  <div style={{background:C.amberL,borderRadius:8,padding:"0.65rem"}}>
+                    <div style={{fontSize:"0.62rem",fontWeight:700,color:C.amber,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"0.25rem"}}>💡 Correct Approach</div>
+                    <p style={{fontSize:"0.76rem",color:"#92400e",lineHeight:1.6,margin:0}}>{step.correction}</p>
+                  </div>)}
+                  {step.isCorrect&&step.nextHint&&(
+                  <div style={{background:C.greenL,borderRadius:8,padding:"0.65rem"}}>
+                    <div style={{fontSize:"0.62rem",fontWeight:700,color:C.green,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"0.25rem"}}>→ Next Step Hint</div>
+                    <p style={{fontSize:"0.76rem",color:"#166534",lineHeight:1.6,margin:0}}>{step.nextHint}</p>
+                  </div>)}
+                </div>
+                <div style={{fontSize:"0.74rem",color:step.isCorrect?C.green:C.amber,fontStyle:"italic",fontWeight:600}}>"{step.encouragement}"</div>
+              </div>
+            </div>))}
             <div ref={stepsEndRef}/>
           </div>)}
 
@@ -185,4 +226,4 @@ export default function AIWorkspace(){
       </div>
     </div>
   </div>);
-          }
+}
