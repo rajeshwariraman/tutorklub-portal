@@ -113,4 +113,53 @@ export default function ParentDashboard(){
     {/* ── Revealed Dashboard ── */}
     {student&&!showLocked&&(<>
 
-      <div style={{background:C.navy,borderRadius:16,padding:"1.5rem 2rem",marginBottom:"1.25rem",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wra
+      <div style={{background:C.navy,borderRadius:16,padding:"1.5rem 2rem",marginBottom:"1.25rem",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"1rem"}}>
+        <div>
+          <p style={{fontSize:"0.65rem",fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"#6de4d8",margin:"0 0 0.2rem"}}>Assessment Results — Demo Session</p>
+          <h1 style={{fontFamily:"Georgia,serif",fontSize:"1.65rem",color:C.white,margin:0}}>{student.childName}</h1>
+          <p style={{color:"rgba(255,255,255,0.5)",fontSize:"0.8rem",margin:"0.25rem 0 0"}}>Grade {student.grade} · {student.subject} · {student.date}</p>
+        </div>
+        <div style={{display:"flex",gap:"1rem",alignItems:"center"}}>
+          <ScoreGauge score={score} total={studentQs.length}/>
+          <div>
+            <div style={{background:"rgba(255,255,255,0.08)",borderRadius:10,padding:"0.65rem 1rem",marginBottom:"0.4rem"}}>
+              <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.4)",fontWeight:600}}>Login ID</div>
+              <div style={{fontFamily:"monospace",fontWeight:700,color:"#6de4d8",fontSize:"0.95rem",letterSpacing:"0.1em"}}>{student.loginId}</div>
+            </div>
+            <button onClick={()=>{setStudent(null);setLoginInput("");setExpandedQ(null);setPlanView("plan");}}
+              style={{background:"transparent",color:"rgba(255,255,255,0.35)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:50,padding:"0.35rem 0.9rem",fontSize:"0.72rem",cursor:"pointer",display:"block",width:"100%",textAlign:"center"}}>
+              ← Close Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"1rem",marginBottom:"1.25rem"}}>
+        <StatCard icon="📋" val={studentQs.length} label="Questions" sub="Total answered"/>
+        <StatCard icon="✅" val={score} label="Correct" color={C.green}/>
+        <StatCard icon="📌" val={studentQs.length-score} label="Need Attention" color={C.red}/>
+        <StatCard icon="📊" val={Math.round(score/studentQs.length*100)+"%"} label="Overall Score"
+          color={score/studentQs.length>=0.8?C.green:score/studentQs.length>=0.6?C.amber:C.red}/>
+      </div>
+
+      <TutorIntervention
+        topicData={topicData}
+        expandedQ={expandedQ}
+        setExpandedQ={setExpandedQ}
+      />
+
+      <FoundationPlan
+        student={student}
+        plan={plan}
+        wrongTopics={wrongTopics}
+        score={score}
+        totalQuestions={studentQs.length}
+        planView={planView}
+        setPlanView={setPlanView}
+      />
+ </>)}
+  </div>);
+}
+    </>)}
+  </div>);
+}
