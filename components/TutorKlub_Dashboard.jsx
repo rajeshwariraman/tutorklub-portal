@@ -491,40 +491,51 @@ export default function App(){
     {/* ── AI WORKSPACE ── */}
     {tab==="workspace"&&(
     <div style={{maxWidth:1160,margin:"0 auto",padding:"2rem 1.5rem"}}>
-      <div style={{marginBottom:"1.5rem"}}>
+
+      {/* Header */}
+      <div style={{marginBottom:"1.25rem"}}>
         <h2 style={{fontFamily:"Georgia,serif",fontSize:"1.4rem",color:C.navy,marginBottom:"0.3rem"}}>AI Maths Workspace</h2>
-        <p style={{fontSize:"0.85rem",color:C.muted,maxWidth:680,lineHeight:1.65}}>The student works through a problem one step at a time on their device. Claude analyses <strong>each step</strong> in real time — identifying mistakes in thinking, not just wrong answers, and showing exactly how to correct the reasoning.</p>
+        <p style={{fontSize:"0.85rem",color:C.muted,maxWidth:700,lineHeight:1.65}}>
+          The student works through a problem one step at a time on their device. Claude analyses <strong>each step</strong> in real time — identifying mistakes in thinking, not just wrong answers, and showing exactly how to correct the reasoning.
+        </p>
       </div>
 
-      <div style={{display:"grid",gridTemplateColumns:"320px 1fr",gap:"1.5rem",alignItems:"flex-start"}}>
-        <div>
-          <div style={{background:C.white,borderRadius:14,padding:"1.2rem",boxShadow:"0 2px 14px rgba(26,39,68,0.08)",marginBottom:"1rem"}}>
-            <div style={{fontSize:"0.67rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",color:C.soft,marginBottom:"0.75rem"}}>Choose a Problem</div>
-            {WORKSPACE_PROBLEMS.map(p=>(
-            <div key={p.id} onClick={()=>{setSelectedProblem(p);resetWorkspace();setCustomProblem("");}}
-              style={{padding:"0.85rem",borderRadius:10,marginBottom:"0.5rem",cursor:"pointer",border:`2px solid ${selectedProblem?.id===p.id?C.teal:"#eee"}`,background:selectedProblem?.id===p.id?C.tealL:"#fafafa",transition:"all 0.18s"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"0.5rem",marginBottom:"0.25rem"}}>
-                <span style={{fontSize:"0.82rem",fontWeight:700,color:C.navy,lineHeight:1.4}}>{p.title}</span>
-                <Badge label={p.difficulty} type="diff"/>
-              </div>
-              <div style={{fontSize:"0.71rem",color:C.soft}}>Grade {p.grade} · {p.subject} · {p.topic}</div>
-            </div>))}
-          </div>
-          <div style={{background:C.white,borderRadius:14,padding:"1.2rem",boxShadow:"0 2px 14px rgba(26,39,68,0.08)"}}>
-            <div style={{fontSize:"0.67rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",color:C.soft,marginBottom:"0.75rem"}}>Or Enter a Custom Problem</div>
-            <textarea value={customProblem} onChange={e=>{setCustomProblem(e.target.value);setSelectedProblem(null);resetWorkspace();}}
-              placeholder="Type any maths problem here..."
-              style={{width:"100%",minHeight:85,padding:"0.75rem",border:"1.5px solid #e0ddd6",borderRadius:8,fontFamily:"inherit",fontSize:"0.84rem",resize:"vertical",boxSizing:"border-box",outline:"none",lineHeight:1.6}}/>
-          </div>
+      {/* Problem picker — horizontal scrolling pill row */}
+      <div style={{background:C.white,borderRadius:14,padding:"1.1rem 1.25rem",marginBottom:"1.1rem",boxShadow:"0 2px 14px rgba(26,39,68,0.07)"}}>
+        <div style={{fontSize:"0.67rem",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",color:C.soft,marginBottom:"0.65rem"}}>Choose a Problem</div>
+        <div style={{display:"flex",gap:"0.5rem",flexWrap:"wrap"}}>
+          {WORKSPACE_PROBLEMS.map(p=>(
+          <button key={p.id}
+            onClick={()=>{setSelectedProblem(p);resetWorkspace();setCustomProblem("");}}
+            style={{padding:"0.45rem 1rem",borderRadius:50,border:`2px solid ${selectedProblem?.id===p.id?C.teal:"#e0ddd6"}`,background:selectedProblem?.id===p.id?C.tealL:"transparent",cursor:"pointer",fontFamily:"inherit",fontSize:"0.8rem",fontWeight:700,color:selectedProblem?.id===p.id?C.teal:C.muted,transition:"all 0.18s",display:"flex",alignItems:"center",gap:"0.4rem",whiteSpace:"nowrap"}}>
+            {p.title}
+            <span style={{fontSize:"0.65rem",opacity:0.7}}>G{p.grade}</span>
+            <Badge label={p.difficulty} type="diff"/>
+          </button>))}
         </div>
+        {/* Custom problem inline */}
+        <div style={{marginTop:"0.85rem",display:"flex",gap:"0.75rem",alignItems:"flex-start"}}>
+          <textarea value={customProblem}
+            onChange={e=>{setCustomProblem(e.target.value);setSelectedProblem(null);resetWorkspace();}}
+            placeholder="Or type a custom problem here and press Enter to start..."
+            rows={1}
+            style={{flex:1,padding:"0.6rem 0.85rem",border:"1.5px solid #e0ddd6",borderRadius:10,fontFamily:"inherit",fontSize:"0.84rem",resize:"none",boxSizing:"border-box",outline:"none",lineHeight:1.5}}/>
+          {customProblem.trim()&&(
+          <button onClick={()=>{resetWorkspace();}}
+            style={{background:C.teal,color:C.white,border:"none",borderRadius:50,padding:"0.6rem 1.25rem",fontSize:"0.82rem",fontWeight:700,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>
+            Use This →
+          </button>)}
+        </div>
+      </div>
 
-        <div>
-          {!activeProblemText&&(
-          <div style={{background:C.white,borderRadius:14,padding:"3rem 2rem",textAlign:"center",boxShadow:"0 2px 14px rgba(26,39,68,0.08)"}}>
-            <div style={{fontSize:"3rem",marginBottom:"1rem"}}>🧮</div>
-            <h3 style={{fontFamily:"Georgia,serif",color:C.navy,marginBottom:"0.5rem"}}>Select a Problem to Begin</h3>
-            <p style={{fontSize:"0.87rem",color:C.muted,lineHeight:1.7,maxWidth:400,margin:"0 auto"}}>The student enters their working one step at a time. Claude analyses each step for correctness and quality of mathematical reasoning — not just the final answer.</p>
-          </div>)}
+      {/* Full-width workspace */}
+      <div>
+        {!activeProblemText&&(
+        <div style={{background:C.white,borderRadius:14,padding:"3.5rem 2rem",textAlign:"center",boxShadow:"0 2px 14px rgba(26,39,68,0.08)"}}>
+          <div style={{fontSize:"3.5rem",marginBottom:"1rem"}}>🧮</div>
+          <h3 style={{fontFamily:"Georgia,serif",fontSize:"1.3rem",color:C.navy,marginBottom:"0.5rem"}}>Select a problem above to begin</h3>
+          <p style={{fontSize:"0.87rem",color:C.muted,lineHeight:1.7,maxWidth:500,margin:"0 auto"}}>The student enters their working one step at a time. Claude analyses each step for correctness and quality of mathematical reasoning — identifying mistakes in <em>thinking</em>, not just wrong final answers.</p>
+        </div>)}
 
           {activeProblemText&&(<>
             <div style={{background:C.navy,borderRadius:14,padding:"1.25rem 1.5rem",marginBottom:"1rem",display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"1rem"}}>
@@ -617,7 +628,6 @@ export default function App(){
               <p style={{fontSize:"0.71rem",color:"#bbb",marginTop:"0.6rem",textAlign:"center"}}>Powered by Claude AI · Analyses reasoning quality, not just the final answer</p>
             </div>)}
           </>)}
-        </div>
       </div>
     </div>)}
 
