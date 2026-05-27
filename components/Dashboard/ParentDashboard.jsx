@@ -172,4 +172,243 @@ export default function ParentDashboard(){
         style={{width:"100%",background:C.teal,color:C.white,border:"none",borderRadius:50,padding:"0.85rem",fontSize:"0.9rem",fontWeight:700,cursor:"pointer",boxShadow:"0 4px 14px rgba(14,138,124,0.3)"}}>
         Open Dashboard →
       </button>
-      <p style={{fontSize:"0.72re
+      <p style={{fontSize:"0.72rem",color:"#aaa",marginTop:"0.75rem"}}>Demo: type TK-AR4821 and press Enter</p>
+    </div>)}
+
+    {/* ── Locked Screen ── */}
+    {student&&showLocked&&(
+    <div style={{background:C.white,borderRadius:18,padding:"2.5rem",maxWidth:460,margin:"0 auto",boxShadow:"0 4px 28px rgba(26,39,68,0.1)",textAlign:"center"}}>
+      <div style={{fontSize:"3rem",marginBottom:"0.6rem"}}>🔒</div>
+      <h2 style={{fontFamily:"Georgia,serif",fontSize:"1.45rem",color:C.navy,marginBottom:"0.5rem"}}>Results Ready: {student.childName}</h2>
+      <p style={{fontSize:"0.85rem",color:C.muted,marginBottom:"1.5rem",lineHeight:1.7}}>Present to <strong>{student.parentName}</strong> when you are in the demo session. Click below to reveal all results.</p>
+      <div style={{background:C.cream,borderRadius:12,padding:"1rem",marginBottom:"1.5rem",textAlign:"left"}}>
+        {[["Student",student.childName],["Grade","Grade "+student.grade],["Subject",student.subject],["Date",student.date],["Login ID",student.loginId]].map(([k,v])=>(
+          <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"0.35rem 0",borderBottom:"1px solid #f0ede8"}}>
+            <span style={{fontSize:"0.78rem",color:C.soft,fontWeight:600}}>{k}</span>
+            <span style={{fontSize:"0.78rem",color:C.navy,fontWeight:700,fontFamily:k==="Login ID"?"monospace":"inherit"}}>{v}</span>
+          </div>
+        ))}
+      </div>
+      <button onClick={()=>setShowLocked(false)}
+        style={{width:"100%",background:C.gold,color:C.white,border:"none",borderRadius:50,padding:"0.9rem",fontSize:"0.9rem",fontWeight:700,cursor:"pointer",boxShadow:"0 4px 14px rgba(201,146,42,0.3)"}}>
+        Reveal Results to Parent →
+      </button>
+      <button onClick={()=>{setStudent(null);setLoginInput("");}}
+        style={{width:"100%",background:"transparent",color:"#aaa",border:"1px solid #e0ddd6",borderRadius:50,padding:"0.65rem",fontSize:"0.82rem",fontWeight:600,cursor:"pointer",marginTop:"0.5rem"}}>
+        ← Back
+      </button>
+    </div>)}
+
+    {/* ── Revealed Dashboard ── */}
+    {student&&!showLocked&&(<>
+
+      {/* Header */}
+      <div style={{background:C.navy,borderRadius:16,padding:"1.5rem 2rem",marginBottom:"1.25rem",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"1rem"}}>
+        <div>
+          <p style={{fontSize:"0.65rem",fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"#6de4d8",margin:"0 0 0.2rem"}}>Assessment Results — Demo Session</p>
+          <h1 style={{fontFamily:"Georgia,serif",fontSize:"1.65rem",color:C.white,margin:0}}>{student.childName}</h1>
+          <p style={{color:"rgba(255,255,255,0.5)",fontSize:"0.8rem",margin:"0.25rem 0 0"}}>Grade {student.grade} · {student.subject} · {student.date}</p>
+        </div>
+        <div style={{display:"flex",gap:"1rem",alignItems:"center"}}>
+          <ScoreGauge score={score} total={studentQs.length}/>
+          <div>
+            <div style={{background:"rgba(255,255,255,0.08)",borderRadius:10,padding:"0.65rem 1rem",marginBottom:"0.4rem"}}>
+              <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.4)",fontWeight:600}}>Login ID</div>
+              <div style={{fontFamily:"monospace",fontWeight:700,color:"#6de4d8",fontSize:"0.95rem",letterSpacing:"0.1em"}}>{student.loginId}</div>
+            </div>
+            <button onClick={()=>{setStudent(null);setLoginInput("");setExpandedQ(null);setPlanView("plan");}}
+              style={{background:"transparent",color:"rgba(255,255,255,0.35)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:50,padding:"0.35rem 0.9rem",fontSize:"0.72rem",cursor:"pointer",display:"block",width:"100%",textAlign:"center"}}>
+              ← Close Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stat Cards */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"1rem",marginBottom:"1.25rem"}}>
+        <StatCard icon="📋" val={studentQs.length} label="Questions" sub="Total answered"/>
+        <StatCard icon="✅" val={score} label="Correct" color={C.green}/>
+        <StatCard icon="📌" val={studentQs.length-score} label="Need Attention" color={C.red}/>
+        <StatCard icon="📊" val={Math.round(score/studentQs.length*100)+"%"} label="Overall Score"
+          color={score/studentQs.length>=0.8?C.green:score/studentQs.length>=0.6?C.amber:C.red}/>
+      </div>
+
+      {/* Topic-by-Topic Analysis */}
+      <h2 style={{fontFamily:"Georgia,serif",fontSize:"1.2rem",color:C.navy,marginBottom:"0.85rem"}}>Topic-by-Topic Analysis &amp; AI Insights</h2>
+      <div style={{display:"flex",flexDirection:"column",gap:"0.85rem",marginBottom:"1.5rem"}}>
+        {topicData.map((item,i)=>{
+          const open=expandedQ===i;
+          return(
+          <div key={i} style={{background:C.white,borderRadius:14,overflow:"hidden",boxShadow:"0 2px 10px rgba(26,39,68,0.06)",border:`2px solid ${item.correct?"#dcfce7":"#fee2e2"}`}}>
+            <div style={{padding:"1.1rem 1.25rem",display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"1rem",cursor:"pointer"}} onClick={()=>setExpandedQ(open?null:i)}>
+              <div style={{flex:1}}>
+                <div style={{display:"flex",alignItems:"center",gap:"0.4rem",marginBottom:"0.4rem",flexWrap:"wrap"}}>
+                  <span style={{fontWeight:700,fontSize:"0.86rem",color:C.navy}}>Q{i+1}: {item.t}</span>
+                  <Badge label={item.d} type="diff"/>
+                  <Badge label={item.s} type="subj"/>
+                </div>
+                <p style={{fontSize:"0.82rem",color:C.muted,margin:0,lineHeight:1.6}}>{item.q}</p>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:"0.35rem",flexShrink:0}}>
+                <span style={{background:item.correct?C.greenL:C.redL,color:item.correct?C.green:C.red,fontWeight:700,fontSize:"0.72rem",padding:"0.25rem 0.7rem",borderRadius:50}}>
+                  {item.correct?"✓ Correct":"✗ Needs Attention"}
+                </span>
+                <span style={{fontSize:"0.7rem",color:"#bbb"}}>{open?"▲ Hide":"▼ Details"}</span>
+              </div>
+            </div>
+            {open&&(
+            <div style={{borderTop:"1px solid #f5f5f5",padding:"1.25rem"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.6rem",marginBottom:"1rem"}}>
+                <div style={{background:"#f8f8f8",borderRadius:8,padding:"0.7rem"}}>
+                  <div style={{fontSize:"0.65rem",fontWeight:700,color:"#aaa",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:"0.25rem"}}>Student Answered</div>
+                  <div style={{fontSize:"0.86rem",fontWeight:700,color:item.correct?C.green:C.red}}>{item.selectedOpt||"—"}</div>
+                </div>
+                <div style={{background:C.greenL,borderRadius:8,padding:"0.7rem"}}>
+                  <div style={{fontSize:"0.65rem",fontWeight:700,color:"#aaa",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:"0.25rem"}}>Correct Answer</div>
+                  <div style={{fontSize:"0.86rem",fontWeight:700,color:C.green}}>{item.correctOpt}</div>
+                </div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0.65rem"}}>
+                {[
+                  {bg:C.blueL,tc:C.blue,lc:"#1e40af",title:"🤖 AI Analysis",text:item.correct?`Strong grasp of "${item.concept}". This student is ready to tackle harder "${item.t}" questions at the next difficulty level.`:`Pattern detected: ${item.mistake}. This is a conceptual gap in "${item.concept}", not a careless mistake.`},
+                  {bg:C.redL,tc:C.red,lc:"#991b1b",title:"⚠️ Mistake in Thinking",text:item.correct?"No errors. Thinking is sound and approach is correct.":`The student likely ${item.mistake.toLowerCase()}. This is a typical ${item.d}-level misconception in this topic.`},
+                  {bg:C.greenL,tc:C.green,lc:"#166534",title:"💡 How to Correct It",text:item.correct?`Build on this strength. Introduce a harder ${item.t} problem next session to stretch their thinking.`:item.fix},
+                ].map((box,j)=>(
+                  <div key={j} style={{background:box.bg,borderRadius:8,padding:"0.75rem"}}>
+                    <div style={{fontSize:"0.65rem",fontWeight:700,color:box.tc,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"0.3rem"}}>{box.title}</div>
+                    <p style={{fontSize:"0.78rem",color:box.lc,lineHeight:1.65,margin:0}}>{box.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>)}
+          </div>);
+        })}
+      </div>
+
+      {/* ── 10-Day Private Foundation Plan ── */}
+      <div style={{background:C.white,borderRadius:18,boxShadow:"0 4px 24px rgba(26,39,68,0.09)",overflow:"hidden",marginBottom:"1.5rem"}}>
+        <div style={{background:C.navy,padding:"1.25rem 1.75rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"0.75rem"}}>
+          <div>
+            <p style={{fontSize:"0.65rem",fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"#6de4d8",margin:"0 0 0.2rem"}}>Personalised Recommendation</p>
+            <h3 style={{fontFamily:"Georgia,serif",fontSize:"1.2rem",color:C.white,margin:0}}>10-Day Private Foundation Programme</h3>
+            <p style={{color:"rgba(255,255,255,0.5)",fontSize:"0.78rem",margin:"0.2rem 0 0"}}>8 focused private sessions → graduate to small group → full group class</p>
+          </div>
+          <div style={{display:"flex",gap:"0.4rem",flexWrap:"wrap"}}>
+            {[["plan","📅 Session Plan"],["pathway","🛤️ Learning Pathway"],["insight","💡 Why Private First"]].map(([v,l])=>(
+              <button key={v} onClick={()=>setPlanView(v)}
+                style={{padding:"0.42rem 0.9rem",borderRadius:50,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.74rem",fontWeight:700,background:planView===v?"rgba(14,138,124,0.5)":"rgba(255,255,255,0.08)",color:planView===v?"#6de4d8":"rgba(255,255,255,0.5)"}}>
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Plan View */}
+        {planView==="plan"&&(
+        <div style={{padding:"1.5rem"}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:"0.85rem"}}>
+            {plan.map((s,i)=>{
+              const isGrad=s.type==="Graduation";
+              return(
+              <div key={i} style={{borderRadius:12,overflow:"hidden",border:`2px solid ${s.col}22`,boxShadow:"0 2px 8px rgba(26,39,68,0.06)"}}>
+                <div style={{background:s.col,padding:"0.5rem 1rem",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <span style={{fontSize:"0.67rem",fontWeight:700,color:"rgba(255,255,255,0.9)",letterSpacing:"0.07em"}}>DAY {s.day} · SESSION {s.session}</span>
+                  <span style={{fontSize:"1rem"}}>{s.icon}</span>
+                </div>
+                <div style={{padding:"0.85rem",background:isGrad?C.navyD:C.white}}>
+                  <div style={{fontSize:"0.72rem",fontWeight:700,color:isGrad?"#6de4d8":s.col,marginBottom:"0.25rem",textTransform:"uppercase",letterSpacing:"0.06em"}}>{s.type}</div>
+                  <div style={{fontSize:"0.85rem",fontWeight:700,color:isGrad?C.white:C.navy,marginBottom:"0.3rem"}}>{s.topic}</div>
+                  <div style={{fontSize:"0.76rem",color:isGrad?"rgba(255,255,255,0.6)":C.muted,lineHeight:1.6,marginBottom:"0.35rem"}}>{s.focus}</div>
+                  <div style={{fontSize:"0.7rem",color:isGrad?"rgba(255,255,255,0.4)":C.soft,fontStyle:"italic"}}>{s.activity}</div>
+                </div>
+              </div>);
+            })}
+          </div>
+          <div style={{marginTop:"1.1rem",padding:"0.85rem 1rem",background:C.cream,borderRadius:10,display:"flex",gap:"0.6rem",alignItems:"flex-start",fontSize:"0.79rem",color:C.muted}}>
+            <span>💤</span>
+            <span><strong style={{color:C.navy}}>Rest days</strong> are built in. Students receive AI-generated practice sets automatically after each session — delivered to the parent's email within an hour of class ending.</span>
+          </div>
+        </div>)}
+
+        {/* Pathway View */}
+        {planView==="pathway"&&(
+        <div style={{padding:"1.75rem"}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"1rem"}}>
+            {[
+              {icon:"🧑‍💻",title:"Private 1-on-1",sub:"STARTING NOW",duration:"Days 1 – 10 · 8 Sessions",desc:`Full attention on ${student.childName}'s specific gaps. Tutor corrects misconceptions in real time using AI Workspace.`,detail:["Complete focus on identified gaps: "+wrongTopics.map(t=>t.t).join(", "),"Custom pace — no group pressure at all","AI Workspace for step-by-step error analysis","Correction of thinking patterns, not just answers","Practice sets generated automatically after every session"],col:C.red,badge:"Now"},
+              {icon:"👥",title:"Small Group · 3 Students",sub:"AFTER SESSION 8",duration:"Weeks 2 – 3",desc:"Once foundations are solid, join 2 peers at the same level. Introduces collaboration while keeping it intimate.",detail:["3 students matched at same proficiency level","Peer learning begins naturally","Group problem-solving exercises","AI still tracks each student individually","Tutor can still address individual needs quickly"],col:C.amber,badge:"Next"},
+              {icon:"🏫",title:"Full Group · 5 Students",sub:"AFTER 3 WEEKS",duration:"Ongoing",desc:"The full TutorKlub experience. Ready to thrive — not struggle — in a 5-student group class.",detail:["5-student class — our standard","Competitive and collaborative environment","Monthly parent review calls","AI benchmarks progress against grade level","Strong foundation prevents dropout"],col:C.teal,badge:"Goal"},
+            ].map((stage,i)=>(
+            <div key={i} style={{borderRadius:14,overflow:"hidden",border:`2px solid ${stage.col}22`,boxShadow:"0 2px 12px rgba(26,39,68,0.07)"}}>
+              <div style={{background:stage.col,padding:"1rem",textAlign:"center"}}>
+                <div style={{fontSize:"1.7rem",marginBottom:"0.2rem"}}>{stage.icon}</div>
+                <div style={{fontSize:"0.62rem",fontWeight:700,color:"rgba(255,255,255,0.6)",letterSpacing:"0.1em",marginBottom:"0.15rem"}}>{stage.sub}</div>
+                <div style={{fontFamily:"Georgia,serif",fontSize:"1rem",fontWeight:700,color:C.white}}>{stage.title}</div>
+                <div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.7)",marginTop:"0.2rem"}}>{stage.duration}</div>
+              </div>
+              <div style={{padding:"1rem",background:C.white}}>
+                <p style={{fontSize:"0.79rem",color:C.muted,lineHeight:1.65,marginBottom:"0.75rem"}}>{stage.desc}</p>
+                {stage.detail.map((d,j)=>(
+                  <div key={j} style={{display:"flex",gap:"0.5rem",marginBottom:"0.4rem",fontSize:"0.74rem",color:C.muted,lineHeight:1.5}}>
+                    <span style={{color:stage.col,fontWeight:700,flexShrink:0}}>→</span>{d}
+                  </div>
+                ))}
+              </div>
+            </div>))}
+          </div>
+          <div style={{marginTop:"1.1rem",background:C.navy,borderRadius:12,padding:"1.1rem 1.5rem",display:"flex",gap:"0.75rem",alignItems:"flex-start"}}>
+            <span style={{fontSize:"1.3rem",flexShrink:0}}>📋</span>
+            <p style={{fontSize:"0.81rem",color:"rgba(255,255,255,0.7)",lineHeight:1.75,margin:0}}>
+              <strong style={{color:"#6de4d8"}}>TutorKlub Pathway for {student.childName}:</strong>{" "}
+              8 private sessions targeting{" "}
+              <strong style={{color:C.white}}>{wrongTopics.map(t=>t.t).join(", ")||"identified gaps"}</strong>
+              {" "}→ 3-student group for 2 weeks → full 5-student Grade {student.grade} {student.subject} class.
+              This structured pathway reduces dropout risk and produces measurably stronger long-term outcomes.
+            </p>
+          </div>
+        </div>)}
+
+        {/* Insight View */}
+        {planView==="insight"&&(
+        <div style={{padding:"1.75rem"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginBottom:"1.25rem"}}>
+            {[
+              {icon:"🔬",title:"The assessment reveals a specific gap, not general weakness",body:`${student.childName} answered ${score} out of ${studentQs.length} correctly. The ${wrongTopics.length} incorrect answer${wrongTopics.length!==1?"s":""} reveal${wrongTopics.length===1?"s":""} a specific conceptual gap in ${wrongTopics.map(t=>t.t).join(", ")}. In a group class, this gap would be hidden — the session moves on regardless.`},
+              {icon:"🧠",title:"Private sessions repair thinking patterns, not just answers",body:"When a student applies a wrong procedure consistently, it means the underlying mental model is incorrect. That model needs to be carefully replaced — which requires individual attention, multiple worked examples, and real-time step-by-step analysis of their thinking. This is only possible 1-on-1."},
+              {icon:"⏱️",title:"8 sessions in 10 days is the proven mastery threshold",body:"Mastery-based learning research shows that 8 focused practice sessions with immediate corrective feedback on a specific concept is sufficient to move a struggling student to confident fluency. We have designed the plan above specifically around this threshold."},
+              {icon:"🚀",title:"Strong foundation → group class success, not anxiety",body:`Students who join group classes with unresolved gaps tend to fall further behind, lose confidence, and disengage. ${student.childName} will thrive — not just survive — in a group class after completing this foundation programme. Parents consistently report dramatically higher engagement.`},
+              {icon:"💰",title:"The economics make sense for families",body:"8 private sessions followed by a lifetime of group classes is more cost-effective than months of group classes where the child is too confused to benefit. The private foundation is an investment that makes every subsequent group class session worthwhile."},
+              {icon:"📈",title:"AI Workspace accelerates learning between sessions",body:"In private sessions, we use the AI Workspace so the student can show their working step by step and receive instant analysis of their thinking — not just their answer. This collapses weeks of passive learning into days of active correction."},
+            ].map((item,i)=>(
+            <div key={i} style={{background:C.cream,borderRadius:12,padding:"1.1rem"}}>
+              <div style={{fontSize:"1.4rem",marginBottom:"0.5rem"}}>{item.icon}</div>
+              <div style={{fontWeight:700,fontSize:"0.87rem",color:C.navy,marginBottom:"0.4rem"}}>{item.title}</div>
+              <p style={{fontSize:"0.79rem",color:C.muted,lineHeight:1.7,margin:0}}>{item.body}</p>
+            </div>
+            ))}
+          </div>
+          <div style={{background:C.navy,borderRadius:12,padding:"1.35rem 1.5rem",display:"flex",gap:"1rem",alignItems:"flex-start"}}>
+            <span style={{fontSize:"1.5rem",flexShrink:0}}>📋</span>
+            <div>
+              <div style={{fontWeight:700,color:"#6de4d8",fontSize:"0.88rem",marginBottom:"0.4rem"}}>TutorKlub's Formal Recommendation for {student.childName}</div>
+              <p style={{fontSize:"0.82rem",color:"rgba(255,255,255,0.75)",lineHeight:1.8,margin:"0 0 0.6rem"}}>
+                We recommend <strong style={{color:C.white}}>8 private sessions over 10 days</strong> to address specific gaps in{" "}
+                <strong style={{color:C.white}}>{wrongTopics.map(t=>t.t).join(" and ")||"the assessed topics"}</strong>.
+                Each session uses our <strong style={{color:C.white}}>AI Workspace</strong> so the tutor can see {student.childName}'s exact thinking process and correct it in real time.
+                After Session 8, {student.childName} will be matched to a <strong style={{color:C.white}}>3-student group</strong> for 2 transitional weeks before joining the regular <strong style={{color:C.white}}>Grade {student.grade} {student.subject} group class</strong>.
+              </p>
+              <div style={{display:"flex",gap:"0.75rem",flexWrap:"wrap"}}>
+                {[["📅","Starts","Within 48 hours"],["⏱️","Duration","10 days / 8 sessions"],["💻","Format","Zoom + AI Workspace"],["👥","Next step","3-student group class"]].map(([ic,lbl,val])=>(
+                  <div key={lbl} style={{background:"rgba(255,255,255,0.08)",borderRadius:8,padding:"0.55rem 0.85rem"}}>
+                    <div style={{fontSize:"0.65rem",color:"rgba(255,255,255,0.4)",marginBottom:"0.15rem"}}>{ic} {lbl}</div>
+                    <div style={{fontSize:"0.8rem",fontWeight:700,color:C.white}}>{val}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>)}
+      </div>
+    </>)}
+  </div>);
+}
