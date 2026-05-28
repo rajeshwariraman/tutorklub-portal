@@ -1,7 +1,8 @@
-// components/Dashboard/AddStudent.jsx
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import AddStudentFields from "./AddStudentFields";
+
+const TUTOR_ID = "014c789e-ead5-4e77-b3a9-fc017fb49645";
 
 const C = {
   navy:"#1a2744", teal:"#0e8a7c", white:"#fff", soft:"#8491a8",
@@ -29,8 +30,16 @@ export default function AddStudent({ onStudentAdded, onClose }) {
       { day:"numeric", month:"long", year:"numeric" });
     const { data, error: dbError } = await supabase
       .from("Students")
-      .insert([{ login_id, child_name:form.child_name, parent_name:form.parent_name,
-        grade:parseInt(form.grade), subject:form.subject, email:form.email, date }])
+      .insert([{
+        Login_id: login_id,
+        Child_Name: form.child_name,
+        Parent_Name: form.parent_name,
+        Grade: parseInt(form.grade),
+        Subject: form.subject,
+        email: form.email,
+        date,
+        Tutor_Id: TUTOR_ID
+      }])
       .select();
     if (dbError) { setError("Failed to add student. Please try again."); setLoading(false); return; }
     setSuccess(`Student added! Login ID: ${login_id}`);
@@ -52,7 +61,7 @@ export default function AddStudent({ onStudentAdded, onClose }) {
         )}
       </div>
       <AddStudentFields form={form} setForm={setForm}/>
-      {error   && <div style={{ background:C.redL,   borderRadius:8, padding:"0.65rem 0.85rem",
+      {error   && <div style={{ background:C.redL, borderRadius:8, padding:"0.65rem 0.85rem",
         marginBottom:"0.75rem", fontSize:"0.8rem", color:C.red }}>{error}</div>}
       {success && <div style={{ background:C.greenL, borderRadius:8, padding:"0.65rem 0.85rem",
         marginBottom:"0.75rem", fontSize:"0.8rem", color:C.green, fontWeight:700 }}>✅ {success}</div>}
