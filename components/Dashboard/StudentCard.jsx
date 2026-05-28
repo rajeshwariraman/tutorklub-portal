@@ -1,7 +1,5 @@
-// components/Dashboard/StudentCard.jsx
 const SC = { Math:"#2563eb", English:"#7c3aed", Telugu:"#c2410c", Hindi:"#db2777" };
 const SB = { Math:"#eff6ff", English:"#f5f3ff", Telugu:"#fff7ed", Hindi:"#fdf2f8" };
-
 function Badge({ label }) {
   return (
     <span style={{
@@ -13,7 +11,6 @@ function Badge({ label }) {
     }}>{label}</span>
   );
 }
-
 export default function StudentCard({ student: s, onSelect }) {
   return (
     <div onClick={() => onSelect && onSelect(s)}
@@ -27,22 +24,22 @@ export default function StudentCard({ student: s, onSelect }) {
         <div style={{ width:40, height:40, borderRadius:"50%", background:"#e6f5f3",
           display:"flex", alignItems:"center", justifyContent:"center",
           fontSize:"1.1rem", fontWeight:700, color:"#0e8a7c", flexShrink:0 }}>
-          {s.child_name?.[0]?.toUpperCase() || "?"}
+          {s.Child_Name?.[0]?.toUpperCase() || "?"}
         </div>
         <div>
           <div style={{ fontWeight:700, fontSize:"0.92rem", color:"#1a2744", marginBottom:"0.2rem" }}>
-            {s.child_name}
+            {s.Child_Name}
           </div>
           <div style={{ fontSize:"0.76rem", color:"#8491a8" }}>
-            Parent: {s.parent_name} · Grade {s.grade}
+            Parent: {s.Parent_Name} · Grade {s.Grade}
           </div>
         </div>
       </div>
       <div style={{ display:"flex", alignItems:"center", gap:"0.75rem", flexWrap:"wrap" }}>
-        <Badge label={s.subject}/>
+        <Badge label={s.Subject}/>
         <div style={{ background:"#faf8f4", borderRadius:8, padding:"0.3rem 0.7rem",
           fontSize:"0.72rem", fontFamily:"monospace", fontWeight:700, color:"#1a2744" }}>
-          {s.login_id}
+          {s.Login_id}
         </div>
         <span style={{ fontSize:"0.78rem", color:"#0e8a7c", fontWeight:700 }}>View Results →</span>
       </div>
