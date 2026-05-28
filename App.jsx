@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import TutorLogin from "./components/Auth/TutorLogin";
 import ParentDashboard from "./components/Dashboard/ParentDashboard";
+import StudentList from "./components/Dashboard/StudentList";
 import AIWorkspace from "./components/AI/AIWorkspace";
 import AssessmentEngine from "./components/Assessment/AssessmentEngine";
 
@@ -14,9 +15,10 @@ const T=(a)=>({
 });
 
 export default function App(){
-  const [tab,setTab]=useState("dashboard");
+  const [tab,setTab]=useState("students");
   const [user,setUser]=useState(null);
   const [checking,setChecking]=useState(true);
+  const [selectedStudent,setSelectedStudent]=useState(null);
 
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session}})=>{
@@ -57,11 +59,19 @@ export default function App(){
           </span>
         </div>
         <div style={{display:"flex",gap:"0.4rem",flexWrap:"wrap",alignItems:"center"}}>
-          {[["dashboard","📊 Dashboard"],["workspace","🧮 AI Workspace"],["qbank","📚 Question Bank"]].map(([id,lbl])=>(
-            <button key={id} style={T(tab===id)} onClick={()=>setTab(id)}>{lbl}</button>
+          {[
+            ["students","👩‍🎓 Students"],
+            ["dashboard","📊 Dashboard"],
+            ["workspace","🧮 AI Workspace"],
+            ["qbank","📚 Question Bank"]
+          ].map(([id,lbl])=>(
+            <button key={id} style={T(tab===id)} onClick={()=>{setTab(id);setSelectedStudent(null);}}>
+              {lbl}
+            </button>
           ))}
           <button onClick={handleLogout}
-            style={{padding:"0.45rem 1rem",borderRadius:50,border:"1px solid rgba(255,255,255,0.2)",
+            style={{padding:"0.45rem 1rem",borderRadius:50,
+              border:"1px solid rgba(255,255,255,0.2)",
               cursor:"pointer",fontFamily:"inherit",fontSize:"0.78rem",fontWeight:600,
               background:"transparent",color:"rgba(255,255,255,0.5)"}}>
             Sign Out
@@ -69,7 +79,13 @@ export default function App(){
         </div>
       </div>
     </div>
-    {tab==="dashboard" && <ParentDashboard/>}
+    {tab==="students" && (
+      <StudentList onSelectStudent={(s)=>{
+        setSelectedStudent(s);
+        setTab("dashboard");
+      }}/>
+    )}
+    {tab==="dashboard" && <ParentDashboard student={selectedStudent}/>}
     {tab==="workspace" && <AIWorkspace/>}
     {tab==="qbank"     && <AssessmentEngine/>}
   </div>);
