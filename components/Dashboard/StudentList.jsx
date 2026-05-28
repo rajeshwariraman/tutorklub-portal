@@ -3,18 +3,14 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import AddStudent from "./AddStudent";
 import StudentCard from "./StudentCard";
-
 const C = { navy:"#1a2744", teal:"#0e8a7c", white:"#fff", cream:"#faf8f4", muted:"#5a6478" };
 const SUBJECTS = ["", "Math", "English", "Telugu", "Hindi"];
-
 export default function StudentList({ onSelectStudent }) {
   const [students, setStudents] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [showAdd, setShowAdd]   = useState(false);
   const [filter, setFilter]     = useState("");
-
   useEffect(() => { fetchStudents(); }, []);
-
   async function fetchStudents() {
     setLoading(true);
     const { data } = await supabase.from("Students").select("*")
@@ -22,11 +18,8 @@ export default function StudentList({ onSelectStudent }) {
     setStudents(data || []);
     setLoading(false);
   }
-
   function handleStudentAdded(s) { setStudents(prev => [s, ...prev]); setShowAdd(false); }
-
-  const filtered = students.filter(s => !filter || s.subject === filter);
-
+  const filtered = students.filter(s => !filter || s.Subject === filter);
   return (
     <div style={{ maxWidth:1160, margin:"0 auto", padding:"2rem 1.5rem",
       fontFamily:"'Nunito',system-ui,sans-serif" }}>
@@ -48,13 +41,11 @@ export default function StudentList({ onSelectStudent }) {
           + Add Student
         </button>
       </div>
-
       {showAdd && (
         <div style={{ marginBottom:"1.5rem" }}>
           <AddStudent onStudentAdded={handleStudentAdded} onClose={() => setShowAdd(false)}/>
         </div>
       )}
-
       <div style={{ display:"flex", gap:"0.5rem", marginBottom:"1.25rem", flexWrap:"wrap" }}>
         {SUBJECTS.map(s => (
           <button key={s} onClick={() => setFilter(s)}
@@ -67,7 +58,6 @@ export default function StudentList({ onSelectStudent }) {
           </button>
         ))}
       </div>
-
       {loading && <div style={{ textAlign:"center", padding:"3rem", color:C.muted }}>Loading students…</div>}
       {!loading && filtered.length === 0 && (
         <div style={{ textAlign:"center", padding:"3rem", background:C.white,
@@ -78,7 +68,6 @@ export default function StudentList({ onSelectStudent }) {
           </p>
         </div>
       )}
-
       <div style={{ display:"flex", flexDirection:"column", gap:"0.65rem" }}>
         {filtered.map(s => (
           <StudentCard key={s.id} student={s} onSelect={onSelectStudent}/>
