@@ -3,6 +3,8 @@ import { useState } from "react";
 import { QB, DEMO_STUDENT, buildFoundationPlan } from "../../data/questionBank";
 import TutorIntervention from "../Foundation/TutorIntervention";
 import FoundationPlan from "../Foundation/FoundationPlan";
+import { loadStudent, loadAssessments } from '../../lib/assessmentService';
+import AssessmentHistory from './AssessmentHistory';
 
 const C = {
   navy:"#1a2744", teal:"#0e8a7c", gold:"#c9922a",
@@ -65,6 +67,8 @@ export default function ParentDashboard(){
   const [showLocked,setShowLocked]=useState(true);
   const [expandedQ,setExpandedQ]=useState(null);
   const [planView,setPlanView]=useState("plan");
+  const [history,setHistory]=useState([]);
+  const [loadingHist,setLoadingHist]=useState(false);
 
   const studentQs=student
     ?student.questionIds.map(id=>QB.find(q=>q.id===id)).filter(Boolean)
@@ -84,6 +88,17 @@ export default function ParentDashboard(){
     ?buildFoundationPlan(student,studentQs,student.answers)
     :[];
   const wrongTopics=topicData.filter(t=>!t.correct);
+
+  async function handleLogin(){
+    if(!loginInput.toUpperCase().includes("TK-")) return;
+    const { data: studentData } = await loadStudent(loginInput.toUpperCase());
+    setStudent(studentData || DEMO_STUDENT);
+    setShowLocked(true);
+    setLoadingHist(true);
+    const { data: hist } = await loadAssessments(loginInput.toUpperCase());
+    setHistory(hist || []);
+    setLoadingHist(false);
+  }
 
   return(
   <div style={{maxWidth:1160,margin:"0 auto",padding:"2rem 1.5rem"}}>
@@ -124,9 +139,7 @@ export default function ParentDashboard(){
       <input
         value={loginInput}
         onChange={e=>setLoginInput(e.target.value)}
-        onKeyDown={e=>e.key==="Enter"
-          &&loginInput.toUpperCase().includes("TK-")
-          &&(setStudent(DEMO_STUDENT),setShowLocked(true))}
+        onKeyDown={e=>e.key==="Enter" && handleLogin()}
         placeholder="e.g. TK-AR4821"
         style={{
           width:"100%",padding:"0.75rem",
@@ -136,12 +149,7 @@ export default function ParentDashboard(){
           marginBottom:"0.75rem",outline:"none"
         }}/>
       <button
-        onClick={()=>{
-          if(loginInput.toUpperCase().includes("TK-")){
-            setStudent(DEMO_STUDENT);
-            setShowLocked(true);
-          }
-        }}
+        onClick={handleLogin}
         style={{
           width:"100%",background:C.teal,color:C.white,
           border:"none",borderRadius:50,padding:"0.85rem",
@@ -274,6 +282,7 @@ export default function ParentDashboard(){
               onClick={()=>{
                 setStudent(null);setLoginInput("");
                 setExpandedQ(null);setPlanView("plan");
+                setHistory([]);
               }}
               style={{
                 background:"transparent",
@@ -313,6 +322,8 @@ export default function ParentDashboard(){
             score/studentQs.length>=0.6?C.amber:C.red
           }/>
       </div>
+
+      <AssessmentHistory assessments={history} loading={loadingHist} />
 
       <TutorIntervention
         topicData={topicData}
