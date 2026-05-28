@@ -1,38 +1,22 @@
 // components/Auth/TutorLogin.jsx
 import { useState } from "react";
-import { supabase } from "../../lib/supabase";
 const C = {
   navy:"#1a2744", teal:"#0e8a7c", cream:"#faf8f4",
   white:"#fff", muted:"#5a6478", red:"#dc2626",
 };
+const TUTOR_EMAIL = "hello@tutorklub.com";
+const TUTOR_PASSWORD = "Tutorklub123";
 export default function TutorLogin({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  async function handleLogin() {
-    if (!email || !password) {
-      setError("Please enter email and password.");
-      return;
+  function handleLogin() {
+    if (email === TUTOR_EMAIL && password === TUTOR_PASSWORD) {
+      onLogin({ email });
+    } else {
+      setError("Invalid email or password. Please try again.");
     }
-    setLoading(true);
-    setError("");
-    try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (authError) {
-        setError("Invalid email or password. Please try again.");
-        setLoading(false);
-        return;
-      }
-      onLogin(data.user);
-    } catch (e) {
-      setError("Something went wrong. Please try again.");
-    }
-    setLoading(false);
   }
   return (
   <div style={{
@@ -117,16 +101,15 @@ export default function TutorLogin({ onLogin }) {
       }}>{error}</p>)}
       <button
         onClick={handleLogin}
-        disabled={loading}
         style={{
-          width:"100%", background:loading?"#d1d5db":C.teal,
+          width:"100%", background:C.teal,
           color:C.white, border:"none", borderRadius:50,
           padding:"0.9rem", fontSize:"0.9rem",
-          fontWeight:700, cursor:loading?"default":"pointer",
+          fontWeight:700, cursor:"pointer",
           fontFamily:"inherit",
           boxShadow:"0 4px 14px rgba(14,138,124,0.3)"
         }}>
-        {loading ? "Signing in..." : "Sign In →"}
+        Sign In →
       </button>
     </div>
   </div>);
