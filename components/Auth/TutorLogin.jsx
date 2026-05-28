@@ -1,18 +1,16 @@
 // components/Auth/TutorLogin.jsx
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
-
 const C = {
   navy:"#1a2744", teal:"#0e8a7c", cream:"#faf8f4",
   white:"#fff", muted:"#5a6478", red:"#dc2626",
 };
-
 export default function TutorLogin({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   async function handleLogin() {
     if (!email || !password) {
       setError("Please enter email and password.");
@@ -36,7 +34,6 @@ export default function TutorLogin({ onLogin }) {
     }
     setLoading(false);
   }
-
   return (
   <div style={{
     minHeight:"100vh", background:C.cream,
@@ -56,12 +53,10 @@ export default function TutorLogin({ onLogin }) {
         alignItems:"center", justifyContent:"center",
         fontSize:"1.4rem", margin:"0 auto 1rem"
       }}>✦</div>
-
       <h2 style={{
         fontFamily:"Georgia,serif", fontSize:"1.5rem",
         color:C.navy, marginBottom:"0.5rem"
       }}>TutorKlub Portal</h2>
-
       <div style={{
         background:"#e6f5f3", borderRadius:8,
         padding:"0.4rem 0.9rem", display:"inline-block",
@@ -73,12 +68,10 @@ export default function TutorLogin({ onLogin }) {
           textTransform:"uppercase"
         }}>🔑 Tutor Login</span>
       </div>
-
       <p style={{
         fontSize:"0.85rem", color:C.muted,
         marginBottom:"1.75rem"
       }}>Sign in to access your tutor dashboard</p>
-
       <input
         value={email}
         onChange={e => setEmail(e.target.value)}
@@ -91,27 +84,37 @@ export default function TutorLogin({ onLogin }) {
           boxSizing:"border-box", marginBottom:"0.75rem",
           outline:"none"
         }}/>
-
-      <input
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        onKeyDown={e => e.key === "Enter" && handleLogin()}
-        placeholder="Password"
-        type="password"
-        style={{
-          width:"100%", padding:"0.8rem",
-          border:"1.5px solid #e0ddd6", borderRadius:10,
-          fontSize:"0.9rem", fontFamily:"inherit",
-          boxSizing:"border-box", marginBottom:"1rem",
-          outline:"none"
-        }}/>
-
+      <div style={{position:"relative", marginBottom:"1rem"}}>
+        <input
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && handleLogin()}
+          placeholder="Password"
+          type={showPassword?"text":"password"}
+          style={{
+            width:"100%", padding:"0.8rem",
+            paddingRight:"3rem",
+            border:"1.5px solid #e0ddd6", borderRadius:10,
+            fontSize:"0.9rem", fontFamily:"inherit",
+            boxSizing:"border-box", outline:"none"
+          }}/>
+        <button
+          onClick={()=>setShowPassword(!showPassword)}
+          style={{
+            position:"absolute", right:"0.75rem",
+            top:"50%", transform:"translateY(-50%)",
+            background:"none", border:"none",
+            cursor:"pointer", fontSize:"1rem",
+            color:C.muted
+          }}>
+          {showPassword ? "🙈" : "👁️"}
+        </button>
+      </div>
       {error && (
       <p style={{
         fontSize:"0.8rem", color:C.red,
         marginBottom:"0.75rem"
       }}>{error}</p>)}
-
       <button
         onClick={handleLogin}
         disabled={loading}
