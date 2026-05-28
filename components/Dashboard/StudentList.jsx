@@ -2,23 +2,19 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import AddStudent from "./AddStudent";
-
 const C = {
   navy:"#1a2744", teal:"#0e8a7c", tealL:"#e6f5f3",
   cream:"#faf8f4", white:"#fff",
   green:"#16a34a", greenL:"#f0fdf4",
   red:"#dc2626", redL:"#fef2f2",
   blue:"#2563eb", blueL:"#eff6ff",
-  amber:"#d97706", amberL:"#fffbeb",
   purple:"#7c3aed", purpleL:"#f5f3ff",
   pink:"#db2777", pinkL:"#fdf2f8",
   orange:"#c2410c", orangeL:"#fff7ed",
   muted:"#5a6478", soft:"#8491a8",
 };
-
 const SC={Math:C.blue,English:C.purple,Telugu:C.orange,Hindi:C.pink};
 const SB={Math:C.blueL,English:C.purpleL,Telugu:C.orangeL,Hindi:C.pinkL};
-
 function Badge({label}){
   return(
   <span style={{
@@ -30,15 +26,12 @@ function Badge({label}){
     letterSpacing:"0.05em",display:"inline-block"
   }}>{label}</span>);
 }
-
 export default function StudentList({ onSelectStudent }){
   const [students,setStudents]=useState([]);
   const [loading,setLoading]=useState(true);
   const [showAdd,setShowAdd]=useState(false);
   const [filter,setFilter]=useState("");
-
   useEffect(()=>{ fetchStudents(); },[]);
-
   async function fetchStudents(){
     setLoading(true);
     const { data }=await supabase
@@ -48,20 +41,14 @@ export default function StudentList({ onSelectStudent }){
     setStudents(data||[]);
     setLoading(false);
   }
-
   function handleStudentAdded(newStudent){
     setStudents(s=>[newStudent,...s]);
     setShowAdd(false);
   }
-
-  const filtered=students.filter(s=>
-    !filter||s.subject===filter
-  );
-
+  const filtered=students.filter(s=>!filter||s.subject===filter);
   return(
   <div style={{maxWidth:1160,margin:"0 auto",padding:"2rem 1.5rem",
     fontFamily:"'Nunito',system-ui,sans-serif"}}>
-
     <div style={{display:"flex",justifyContent:"space-between",
       alignItems:"center",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
       <div>
@@ -79,33 +66,27 @@ export default function StudentList({ onSelectStudent }){
         + Add Student
       </button>
     </div>
-
     {showAdd&&(
     <div style={{marginBottom:"1.5rem"}}>
       <AddStudent
         onStudentAdded={handleStudentAdded}
-        onClose={()=>setShowAdd(false)}
-      />
+        onClose={()=>setShowAdd(false)}/>
     </div>)}
-
     <div style={{display:"flex",gap:"0.5rem",marginBottom:"1.25rem",flexWrap:"wrap"}}>
       {["","Math","English","Telugu","Hindi"].map(s=>(
-        <button key={s} onClick={()=>setFilter(s)}
-          style={{padding:"0.4rem 0.9rem",borderRadius:50,border:"none",
-            cursor:"pointer",fontFamily:"inherit",fontSize:"0.78rem",fontWeight:700,
-            background:filter===s?C.navy:C.white,
-            color:filter===s?C.white:C.muted,
-            boxShadow:"0 2px 8px rgba(26,39,68,0.07)"}}>
-          {s||"All Subjects"}
-        </button>
-      ))}
+      <button key={s} onClick={()=>setFilter(s)}
+        style={{padding:"0.4rem 0.9rem",borderRadius:50,border:"none",
+          cursor:"pointer",fontFamily:"inherit",fontSize:"0.78rem",fontWeight:700,
+          background:filter===s?C.navy:C.white,
+          color:filter===s?C.white:C.muted,
+          boxShadow:"0 2px 8px rgba(26,39,68,0.07)"}}>
+        {s||"All Subjects"}
+      </button>))}
     </div>
-
     {loading&&(
     <div style={{textAlign:"center",padding:"3rem",color:C.muted}}>
       Loading students...
     </div>)}
-
     {!loading&&filtered.length===0&&(
     <div style={{textAlign:"center",padding:"3rem",
       background:C.white,borderRadius:14,
@@ -115,7 +96,6 @@ export default function StudentList({ onSelectStudent }){
         No students yet. Click "Add Student" to get started!
       </p>
     </div>)}
-
     <div style={{display:"flex",flexDirection:"column",gap:"0.65rem"}}>
       {filtered.map(s=>(
       <div key={s.id}
@@ -126,8 +106,7 @@ export default function StudentList({ onSelectStudent }){
           border:"1px solid #f0ede8",
           display:"flex",alignItems:"center",
           justifyContent:"space-between",
-          flexWrap:"wrap",gap:"0.75rem",
-          transition:"box-shadow 0.2s"}}
+          flexWrap:"wrap",gap:"0.75rem"}}
         onMouseEnter={e=>e.currentTarget.style.boxShadow="0 4px 16px rgba(26,39,68,0.12)"}
         onMouseLeave={e=>e.currentTarget.style.boxShadow="0 2px 8px rgba(26,39,68,0.06)"}>
         <div style={{display:"flex",alignItems:"center",gap:"0.85rem"}}>
@@ -157,9 +136,6 @@ export default function StudentList({ onSelectStudent }){
           </span>
         </div>
       </div>))}
-          </div>
-  </div>);
-}
     </div>
   </div>);
 }
