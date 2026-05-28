@@ -59,12 +59,25 @@ export default function TutorLogin({ onLogin }) {
 
       <h2 style={{
         fontFamily:"Georgia,serif", fontSize:"1.5rem",
-        color:C.navy, marginBottom:"0.3rem"
+        color:C.navy, marginBottom:"0.5rem"
       }}>TutorKlub Portal</h2>
+
+      <div style={{
+        background:"#e6f5f3", borderRadius:8,
+        padding:"0.4rem 0.9rem", display:"inline-block",
+        marginBottom:"0.75rem"
+      }}>
+        <span style={{
+          fontSize:"0.75rem", fontWeight:700,
+          color:"#0e8a7c", letterSpacing:"0.08em",
+          textTransform:"uppercase"
+        }}>🔑 Tutor Login</span>
+      </div>
+
       <p style={{
         fontSize:"0.85rem", color:C.muted,
         marginBottom:"1.75rem"
-      }}>Sign in to access your dashboard</p>
+      }}>Sign in to access your tutor dashboard</p>
 
       <input
         value={email}
