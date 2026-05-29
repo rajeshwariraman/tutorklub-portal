@@ -1,6 +1,6 @@
-// components/Dashboard/StudentCard.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sendAssessmentEmail } from "../../lib/emailService";
+import { loadAssessments } from "../../lib/assessmentService";
 
 const SC = { Math:"#2563eb", English:"#7c3aed", Telugu:"#c2410c", Hindi:"#db2777" };
 const SB = { Math:"#eff6ff", English:"#f5f3ff", Telugu:"#fff7ed", Hindi:"#fdf2f8" };
@@ -18,9 +18,16 @@ function Badge({ label }) {
 }
 
 export default function StudentCard({ student: s, onSelect }) {
-  const [sending, setSending] = useState(false);
-  const [sent,    setSent]    = useState(false);
-  const [error,   setError]   = useState("");
+  const [sending,  setSending]  = useState(false);
+  const [sent,     setSent]     = useState(false);
+  const [error,    setError]    = useState("");
+  const [hasResult,setHasResult]= useState(false);
+
+  useEffect(() => {
+    loadAssessments(s.Login_id).then(({ data }) => {
+      setHasResult(data && data.length > 0);
+    });
+  }, [s.Login_id]);
 
   async function handleSendAssessment(e) {
     e.stopPropagation();
@@ -41,26 +48,24 @@ export default function StudentCard({ student: s, onSelect }) {
     setSending(false);
     if (success) {
       setSent(true);
-      setTimeout(() => setSent(false), 4000);
     } else {
       setError("Failed to send. Please try again.");
     }
   }
 
   return (
-    <div
-      style={{
-        background:"#fff", borderRadius:12, padding:"1rem 1.25rem",
-        boxShadow:"0 2px 8px rgba(26,39,68,0.06)",
-        border:"1px solid #f0ede8",
-        fontFamily:"'Nunito',system-ui,sans-serif",
-      }}>
+    <div style={{
+      background:"#fff", borderRadius:12, padding:"1rem 1.25rem",
+      boxShadow:"0 2px 8px rgba(26,39,68,0.06)",
+      border:"1px solid #f0ede8",
+      fontFamily:"'Nunito',system-ui,sans-serif",
+    }}>
       <div style={{ display:"flex", alignItems:"center",
         justifyContent:"space-between", flexWrap:"wrap", gap:"0.75rem" }}>
 
         <div style={{ display:"flex", alignItems:"center",
           gap:"0.85rem", cursor:"pointer", flex:1 }}
-          onClick={() => onSelect && onSelect(s)}>
+          onClick={() => hasResult && onSelect && onSelect(s)}>
           <div style={{ width:40, height:40, borderRadius:"50%",
             background:"#e6f5f3", display:"flex", alignItems:"center",
             justifyContent:"center", fontSize:"1.1rem",
@@ -87,26 +92,41 @@ export default function StudentCard({ student: s, onSelect }) {
             {s.Login_id}
           </div>
 
-          <button
-            onClick={handleSendAssessment}
-            disabled={sending}
-            style={{
-              background: sent ? "#f0fdf4" : "#e6f5f3",
-              color: sent ? "#16a34a" : "#0e8a7c",
-              border: `1px solid ${sent ? "#16a34a33" : "#0e8a7c33"}`,
+          {!sent ? (
+            <button
+              onClick={handleSendAssessment}
+              disabled={sending}
+              style={{
+                background:"#e6f5f3", color:"#0e8a7c",
+                border:"1px solid #0e8a7c33",
+                borderRadius:50, padding:"0.3rem 0.85rem",
+                fontSize:"0.72rem", fontWeight:700,
+                cursor: sending ? "default" : "pointer",
+                fontFamily:"inherit", whiteSpace:"nowrap",
+              }}>
+              {sending ? "Sending…" : "📨 Send Assessment"}
+            </button>
+          ) : (
+            <span style={{
+              background:"#f0fdf4", color:"#16a34a",
+              border:"1px solid #16a34a33",
               borderRadius:50, padding:"0.3rem 0.85rem",
               fontSize:"0.72rem", fontWeight:700,
-              cursor: sending ? "default" : "pointer",
-              fontFamily:"inherit", whiteSpace:"nowrap",
+              whiteSpace:"nowrap",
             }}>
-            {sending ? "Sending…" : sent ? "✓ Sent!" : "📨 Send Assessment"}
-          </button>
+              ✓ Assessment Sent
+            </span>
+          )}
 
           <span
-            onClick={() => onSelect && onSelect(s)}
-            style={{ fontSize:"0.78rem", color:"#0e8a7c",
-              fontWeight:700, cursor:"pointer" }}>
-            View Results →
+            onClick={() => hasResult && onSelect && onSelect(s)}
+            style={{
+              fontSize:"0.78rem", fontWeight:700,
+              cursor: hasResult ? "pointer" : "default",
+              color: hasResult ? "#0e8a7c" : "#ccc",
+              opacity: hasResult ? 1 : 0.5,
+            }}>
+            {hasResult ? "View Results →" : "Awaiting Assessment"}
           </span>
         </div>
       </div>
