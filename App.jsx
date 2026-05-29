@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 import { supabase } from "./lib/supabase";
 import TutorLogin from "./components/Auth/TutorLogin";
 import ParentDashboard from "./components/Dashboard/ParentDashboard";
 import StudentList from "./components/Dashboard/StudentList";
 import AIWorkspace from "./components/AI/AIWorkspace";
 import AssessmentEngine from "./components/Assessment/AssessmentEngine";
+import AssessmentGrade3 from "./pages/AssessmentGrade3";
 
 const C = { navy:"#1a2744", teal:"#0e8a7c", white:"#fff", muted:"#5a6478" };
-
 const T=(a)=>({
   padding:"0.55rem 1.3rem", borderRadius:50, border:"none", cursor:"pointer",
   fontFamily:"inherit", fontSize:"0.82rem", fontWeight:700,
   background:a?C.navy:"transparent", color:a?C.white:C.muted, transition:"all 0.2s",
 });
 
-export default function App(){
+function TutorPortal() {
   const [tab,setTab]=useState("students");
   const [user,setUser]=useState(null);
   const [checking,setChecking]=useState(true);
@@ -89,4 +90,13 @@ export default function App(){
     {tab==="workspace" && <AIWorkspace/>}
     {tab==="qbank"     && <AssessmentEngine/>}
   </div>);
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/assess/grade3" element={<AssessmentGrade3/>}/>
+      <Route path="/*" element={<TutorPortal/>}/>
+    </Routes>
+  );
 }
