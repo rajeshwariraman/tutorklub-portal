@@ -8,24 +8,22 @@ const L = {
   fontSize:"0.72rem", fontWeight:700, color:"#8491a8",
   textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:"0.3rem",
 };
-
 export default function AddStudentFields({ form, setForm }) {
   const set = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
-
   return (
     <>
       {[
         { label:"Child's Full Name *", key:"child_name", placeholder:"e.g. Arjun Reddy" },
         { label:"Parent's Name *",     key:"parent_name", placeholder:"e.g. Suresh Reddy" },
         { label:"Parent's Email",      key:"email",       placeholder:"e.g. suresh@email.com" },
+        { label:"Parent's WhatsApp Number", key:"phone", placeholder:"e.g. 9985554222" },
       ].map(f => (
         <div key={f.key} style={{ marginBottom:"0.85rem" }}>
           <div style={L}>{f.label}</div>
-          <input value={form[f.key]} onChange={set(f.key)}
+          <input value={form[f.key]||""} onChange={set(f.key)}
             placeholder={f.placeholder} style={F}/>
         </div>
       ))}
-
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr",
         gap:"0.75rem", marginBottom:"0.85rem" }}>
         <div>
