@@ -7,6 +7,7 @@ import StudentList from "./components/Dashboard/StudentList";
 import AIWorkspace from "./components/AI/AIWorkspace";
 import AssessmentEngine from "./components/Assessment/AssessmentEngine";
 import AssessmentGrade3 from "./pages/AssessmentGrade3";
+import StudentFlow from "./components/Student/StudentFlow";
 
 const C = { navy:"#1a2744", teal:"#0e8a7c", white:"#fff", muted:"#5a6478" };
 const T=(a)=>({
@@ -96,6 +97,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/assess/grade3" element={<AssessmentGrade3/>}/>
+      <Route path="/student" element={<StudentFlow/>}/>
       <Route path="/*" element={<TutorPortal/>}/>
     </Routes>
   );
