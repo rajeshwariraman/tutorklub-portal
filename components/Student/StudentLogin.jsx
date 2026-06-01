@@ -44,7 +44,7 @@ export default function StudentLogin({ onLogin, grade, subject }) {
         boxShadow:"0 4px 24px rgba(26,39,68,0.10)"}}>
         <h2 style={{margin:"0 0 0.25rem",color:C.navy,fontSize:"1.3rem",fontWeight:800}}>Student Login</h2>
         <p style={{margin:"0 0 1.5rem",color:C.muted,fontSize:"0.88rem"}}>
-          Grade {grade} · {subject} Assessment
+          Enter your Login ID to begin
         </p>
         <form onSubmit={handleSubmit}>
           <label style={{display:"block",marginBottom:"0.25rem",color:C.navy,fontSize:"0.85rem",fontWeight:700}}>
