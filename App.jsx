@@ -8,6 +8,8 @@ import AIWorkspace from "./components/AI/AIWorkspace";
 import AssessmentEngine from "./components/Assessment/AssessmentEngine";
 import AssessmentGrade3 from "./pages/AssessmentGrade3";
 import StudentFlow from "./components/Student/StudentFlow";
+import DoubtBoard from "./components/Doubts/DoubtBoard";
+import StudentDoubts from "./components/Doubts/StudentDoubts";
 
 const C = { navy:"#1a2744", teal:"#0e8a7c", white:"#fff", muted:"#5a6478" };
 const T=(a)=>({
@@ -65,7 +67,8 @@ function TutorPortal() {
             ["students","👩‍🎓 Students"],
             ["dashboard","📊 Dashboard"],
             ["workspace","🧮 AI Workspace"],
-            ["qbank","📚 Question Bank"]
+            ["qbank","📚 Question Bank"],
+            ["doubts","💬 Doubts"]
           ].map(([id,lbl])=>(
             <button key={id} style={T(tab===id)} onClick={()=>{setTab(id);setSelectedStudent(null);}}>
               {lbl}
@@ -90,6 +93,7 @@ function TutorPortal() {
     {tab==="dashboard" && <ParentDashboard student={selectedStudent}/>}
     {tab==="workspace" && <AIWorkspace/>}
     {tab==="qbank"     && <AssessmentEngine/>}
+    {tab==="doubts"    && <DoubtBoard role="tutor" tutorName={user.email?.split("@")[0] || "Tutor"}/>}
   </div>);
 }
 
@@ -98,6 +102,7 @@ export default function App() {
     <Routes>
       <Route path="/assess/grade3" element={<AssessmentGrade3/>}/>
       <Route path="/student" element={<StudentFlow/>}/>
+      <Route path="/doubts" element={<StudentDoubts/>}/>
       <Route path="/*" element={<TutorPortal/>}/>
     </Routes>
   );
