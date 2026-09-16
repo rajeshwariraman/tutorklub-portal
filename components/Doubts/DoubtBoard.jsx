@@ -19,6 +19,7 @@ export default function DoubtBoard({ role, student, tutorName = "Tutor" }) {
   const [status, setStatus]   = useState("Open");
   const [body, setBody]       = useState("");
   const [file, setFile]       = useState(null);
+  const [preview, setPreview] = useState(null);
   const [priv, setPriv]       = useState(false);
   const [posting, setPosting] = useState(false);
 
@@ -31,15 +32,27 @@ export default function DoubtBoard({ role, student, tutorName = "Tutor" }) {
     setLoading(false);
   }
 
+  function attach(f) {
+    if (!f || !f.type.startsWith("image/")) return;
+    if (preview) URL.revokeObjectURL(preview);
+    setFile(f); setPreview(URL.createObjectURL(f));
+  }
+  function clearFile() { if (preview) URL.revokeObjectURL(preview); setFile(null); setPreview(null); }
+  function onPaste(e) {
+    const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith("image/"));
+    if (item) { e.preventDefault(); attach(item.getAsFile()); }
+  }
+  function onDrop(e) { e.preventDefault(); attach(e.dataTransfer.files?.[0]); }
+
   async function submit() {
-    if (!body.trim()) return;
+    if (!body.trim() && !file) return;
     setPosting(true);
     try {
       const Image_Url = file ? await uploadImage(file) : null;
       const d = await postDoubt({ Student_Id: student.id, Login_id: student.Login_id,
         Child_Name: student.Child_Name, Grade: student.Grade, Subject: student.Subject,
-        Body: body.trim(), Image_Url, Is_Private: priv });
-      setDoubts(p => [d, ...p]); setBody(""); setFile(null); setPriv(false);
+        Body: body.trim() || "(see image)", Image_Url, Is_Private: priv });
+      setDoubts(p => [d, ...p]); setBody(""); clearFile(); setPriv(false);
     } catch (e) { alert("Could not post: " + e.message); }
     setPosting(false);
   }
@@ -50,18 +63,25 @@ export default function DoubtBoard({ role, student, tutorName = "Tutor" }) {
         {role === "tutor" ? "💬 Student Doubts" : `💬 Grade ${student.Grade} ${student.Subject} — Doubts`}</h2>
       <p style={{ fontSize:"0.85rem", color:C.muted, margin:"0 0 1.2rem" }}>
         {role === "tutor" ? "Reply to questions from your classes. Mark resolved when done."
-          : "Ask anything you're stuck on. Your tutor and classmates can help. Tick Private if only your tutor should see it."}</p>
+          : "Ask anything you're stuck on. Paste a screenshot (Ctrl+V), drop an image here, or add a photo from your phone."}</p>
 
       {role === "student" && (
         <div style={{ background:C.white, borderRadius:14, padding:"1rem 1.2rem", marginBottom:"1.5rem",
-          boxShadow:"0 2px 12px rgba(26,39,68,0.07)" }}>
-          <textarea value={body} onChange={e => setBody(e.target.value)} rows={3}
-            placeholder="Type your doubt here… e.g. I don't understand how to carry the 1 in 47 + 36"
+          boxShadow:"0 2px 12px rgba(26,39,68,0.07)" }} onDrop={onDrop} onDragOver={e => e.preventDefault()}>
+          <textarea value={body} onChange={e => setBody(e.target.value)} onPaste={onPaste} rows={3}
+            placeholder="Type your doubt here… paste a screenshot with Ctrl+V"
             style={{ ...inp, resize:"vertical", marginBottom:"0.7rem" }}/>
+          {preview && (
+            <div style={{ position:"relative", display:"inline-block", marginBottom:"0.7rem" }}>
+              <img src={preview} alt="attached" style={{ maxHeight:140, maxWidth:"100%", borderRadius:8, border:"1.5px solid #e2e6ef" }}/>
+              <button onClick={clearFile} title="Remove" style={{ position:"absolute", top:-8, right:-8, width:24, height:24,
+                borderRadius:"50%", border:"none", background:C.navy, color:C.white, cursor:"pointer", fontWeight:700 }}>✕</button>
+            </div>
+          )}
           <div style={{ display:"flex", gap:"0.8rem", alignItems:"center", flexWrap:"wrap" }}>
             <label style={{ fontSize:"0.82rem", color:C.muted, cursor:"pointer" }}>📷 Add photo
-              <input type="file" accept="image/*" capture="environment" onChange={e => setFile(e.target.files[0])}
-                style={{ display:"none" }}/>{file && ` · ${file.name}`}</label>
+              <input type="file" accept="image/*" capture="environment" onChange={e => attach(e.target.files[0])}
+                style={{ display:"none" }}/></label>
             <label style={{ fontSize:"0.82rem", color:C.muted, cursor:"pointer" }}>
               <input type="checkbox" checked={priv} onChange={e => setPriv(e.target.checked)}/> 🔒 Private (tutor only)</label>
             <button onClick={submit} disabled={posting} style={{ marginLeft:"auto", background:C.teal, color:C.white,
